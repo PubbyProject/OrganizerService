@@ -19,13 +19,7 @@ export default class OrganizerRepository {
     public async createOrganizer(organizer: Organizer) {
         await this.prisma.$connect();
         const result = await this.prisma.organizer.create({
-            data: {
-                name: organizer.name,
-                address: organizer.address,
-                email: organizer.email,
-                hostType: organizer.hostType,
-                bio: organizer.bio
-            }
+            data: organizer
         })
         .then(async () => {
             await this.prisma.$disconnect();
