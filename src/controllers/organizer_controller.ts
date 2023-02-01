@@ -22,6 +22,20 @@ const getAllOrganizers = async (req: Request, res: Response) => {
     });
 }
 
+const getOrganizerById = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const organizer = await service.fetchOrganizerById(id);
+    if (organizer instanceof ErrorResponse) {
+        return res.status(404).json({
+            body: organizer.getError()
+        });
+    }
+
+    return res.status(200).json({
+        body: organizer
+    });
+}
+
 const createOrganizer = async (req: Request, res: Response) => {
     const newOrganizer = req.body as Organizer;
     const result = await service.createOrganizer(newOrganizer);
@@ -36,4 +50,4 @@ const createOrganizer = async (req: Request, res: Response) => {
     });
 }
 
-export default {getAllOrganizers, createOrganizer}
+export default {getAllOrganizers, getOrganizerById, createOrganizer}

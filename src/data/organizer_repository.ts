@@ -16,6 +16,18 @@ export default class OrganizerRepository {
         return organizers;
     }
 
+    public async getOrganizerById(organizerId: string) {
+        await this.prisma.$connect();
+        const organizer = await this.prisma.organizer.findUnique({
+            where: {
+                id: organizerId
+            }
+        });
+
+        await this.prisma.$disconnect();
+        return organizer;
+    }
+
     public async createOrganizer(organizer: Organizer) {
         await this.prisma.$connect();
         const result = await this.prisma.organizer.create({
