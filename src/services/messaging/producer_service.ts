@@ -35,10 +35,9 @@ export default class RabbitMQProducer {
       console.log('Channel is closed.');
     });
 
-    console.log(`host: ${this.hostUrl}`)
     await channel.queueDeclare({queue: this.queueName});
-
     await channel.basicPublish({routingKey: this.queueName}, message);
+    
     await channel.close();
     await connection.close();
   }
