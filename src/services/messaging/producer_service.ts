@@ -1,31 +1,46 @@
-import amqp, { Connection } from 'amqplib/callback_api'
+import Connection from 'rabbitmq-client'
 
-const createMQProducer = (amqpUrl: string, queueName: string) => {
-  console.log('Connecting to RabbitMQ...')
-  let ch: amqp.Channel;
-  amqp.connect(amqpUrl, (errorConnect: Error, connection: Connection) => {
-    if (errorConnect) {
-      console.log('Error connecting to RabbitMQ: ', errorConnect)
-      return
-    }
+export default class RabbitMQProducer {
 
-    connection.createChannel((errorChannel, channel) => {
-      if (errorChannel) {
-        console.log('Error creating channel: ', errorChannel)
-        return
-      }
+  private hostUrl: string;
+  private queueName: string;
 
-      ch = channel
-      console.log('Connected to RabbitMQ')
-    })
-  })
-
-  return (msg: string) => {
-    console.log('Produce message to RabbitMQ...')
-    console.log(`Queue: ${queueName}`)
-    console.log(`Msg variable in producer: ${msg}`)
-    return ch.sendToQueue(queueName, Buffer.from(msg))
+  constructor(hostUrl: string, queueName: string) {
+    this.hostUrl = hostUrl;
+    this.queueName = queueName;
   }
-}
 
-export default createMQProducer;
+  public CreateConnection() {
+    const rabbit = new Connection({
+      url: this.hostUrl,
+      retryLow: 1000,
+      retryHigh: 30000
+    });
+
+    rabbit.on('connection', () => {
+      console.log('Connection successfully established!');
+    });
+
+    rabbit.on('error', (err) => {
+      console.log(err);
+    });
+
+    return rabbit;
+  }
+
+  public async ProduceMessage(connection: Connection, message: any) {
+    const channel = await connection.acquire();
+
+    channel.on('close', () => {
+      console.log('Channel is closed.');
+    });
+
+    console.log(`host: ${this.hostUrl}`)
+    await channel.queueDeclare({queue: this.queueName});
+
+    await channel.basicPublish({routingKey: this.queueName}, message);
+    await channel.close();
+    await connection.close();
+  }
+
+}
