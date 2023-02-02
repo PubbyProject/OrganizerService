@@ -57,4 +57,18 @@ export default class OrganizerService {
 
       return result;
     }
+
+    public async updateOrganizer(organizerId: string, organizer: Organizer) {
+      const existingOrganizer = await this.fetchOrganizerById(organizerId);
+      if (existingOrganizer instanceof MalformedIdError || existingOrganizer instanceof OrganizerNotFoundError) {
+        return existingOrganizer;
+      }
+
+      const updatedOrganizer = await this.repository.updateOrganizer(organizerId, organizer);
+      if (updatedOrganizer instanceof Error) {
+        return new ErrorResponse(updatedOrganizer.message)
+      }
+
+      return updatedOrganizer;
+    }
 }

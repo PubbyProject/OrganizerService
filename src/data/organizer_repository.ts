@@ -63,4 +63,30 @@ export default class OrganizerRepository {
 
         return result;
     }
+
+    public async updateOrganizer(organizerId: string, organizer: Organizer) {
+        await this.prisma.$connect();
+
+        const result = await this.prisma.organizer.update({
+            where: {
+                id: organizerId
+            },
+            data: {
+                name: organizer.name || undefined,
+                address: organizer.address || undefined,
+                email: organizer.email || undefined,
+                hostType: organizer.hostType || undefined,
+                bio: organizer.bio || undefined
+            }
+        })
+        .then(async() => {
+            await this.prisma.$disconnect();
+            return organizer;
+        })
+        .catch(async (e: Error) => {
+            return e;
+        });
+
+        return result;
+    }
 }
