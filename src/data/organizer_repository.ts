@@ -44,4 +44,23 @@ export default class OrganizerRepository {
 
         return result;
     }
+
+    public async deleteOrganizer(organizerId: string) {
+        await this.prisma.$connect();
+        const result = await this.prisma.organizer.delete({
+            where: {
+                id: organizerId
+            }
+        })
+        .then(async () => {
+            await this.prisma.$disconnect();
+            return organizerId;
+        })
+        .catch(async (e: Error) => {
+            await this.prisma.$disconnect();
+            return e;
+        });
+
+        return result;
+    }
 }

@@ -1,6 +1,8 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import OrganizerRepository from "../data/organizer_repository";
 import ErrorResponse from "../entities/errors/error_response";
+import MalformedIdError from "../entities/errors/malformed_id";
+import OrganizerNotFoundError from "../entities/errors/not_found";
 import Organizer from "../entities/models/organizer";
 import validateProperties from "../helpers/prop_validator";
 
@@ -18,10 +20,10 @@ export default class OrganizerService {
 
     public async fetchOrganizerById(organizerId: string) {
       const organizer = await this.repository.getOrganizerById(organizerId).catch(async (e: PrismaClientKnownRequestError) => {
-        return new ErrorResponse('Malformed request ID. Please use a valid ID');
+        return new MalformedIdError('Malformed request ID. Please use a valid ID');
       });
       if (organizer === null) {
-        return new ErrorResponse('Organizer with this ID not found');
+        return new OrganizerNotFoundError('Organizer with this ID not found');
       }
 
       return organizer;
@@ -40,5 +42,19 @@ export default class OrganizerService {
       }
 
       return newOrganizer;
+    }
+
+    public async deleteOrganizer(organizerId: string) {
+      const existingOrganizer = await this.fetchOrganizerById(organizerId);
+      if (existingOrganizer instanceof MalformedIdError || existingOrganizer instanceof OrganizerNotFoundError) {
+        return existingOrganizer;
+      }
+
+      const result = this.repository.deleteOrganizer(organizerId);
+      if (result instanceof Error) {
+        return new ErrorResponse(result.message);
+      }
+
+      return result;
     }
 }
