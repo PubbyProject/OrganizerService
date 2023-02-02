@@ -4,6 +4,9 @@ import OrganizerRepository from "../data/organizer_repository";
 import ErrorResponse from "../entities/errors/error_response";
 import Organizer from "../entities/models/organizer";
 import OrganizerService from "../services/organizer_service";
+import RabbitMQProducerService from "../services/messaging/producer_service";
+import createMQProducer from "../services/messaging/producer_service";
+import ProducerMessage from "../entities/models/producer_message";
 
 const repository = new OrganizerRepository(new PrismaClient({
     datasources: {
@@ -30,6 +33,14 @@ const getOrganizerById = async (req: Request, res: Response) => {
             body: organizer.getError()
         });
     }
+
+    const message: ProducerMessage = {
+        organizerId: id
+    };
+    
+    const rabbitProducer = createMQProducer(String(process.env.RABBITMQ_URL), "fetch-organizer-events-request-queue");
+    console.log(`Message controller: ${message.organizerId}`)
+    rabbitProducer(JSON.stringify(message));
 
     return res.status(200).json({
         body: organizer
