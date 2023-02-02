@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response} from 'express';
 import OrganizerRepository from "../data/organizer_repository";
 import ErrorResponse from "../entities/errors/error_response";
+import MalformedIdError from "../entities/errors/malformed_id";
+import OrganizerNotFoundError from "../entities/errors/not_found";
 import Organizer from "../entities/models/organizer";
 import OrganizerService from "../services/organizer_service";
 import RabbitMQProducerService from "../services/messaging/producer_service";
@@ -61,4 +63,43 @@ const createOrganizer = async (req: Request, res: Response) => {
     });
 }
 
-export default {getAllOrganizers, getOrganizerById, createOrganizer}
+const deleteOrganizer = async(req: Request, res: Response) => {
+    const organizerId = req.params.id;
+    const result = await service.deleteOrganizer(organizerId);
+    if (result instanceof MalformedIdError) {
+        return res.status(400).json({
+            body: result.getError()
+        });
+    } 
+    else if (result instanceof OrganizerNotFoundError) {
+        return res.status(404).json({
+            body: result.getError()
+        })
+    }
+
+    return res.status(200).json({
+        body: 'Successfully deleted the organizer.'
+    });
+}
+
+const updateOrganizer = async(req: Request, res: Response) => {
+    const organizerId = req.params.id;
+    const updatedOrganizerInfo = req.body as Organizer;
+    const result = await service.updateOrganizer(organizerId, updatedOrganizerInfo);
+    if (result instanceof MalformedIdError) {
+        return res.status(400).json({
+            body: result.getError()
+        });
+    } 
+    else if (result instanceof OrganizerNotFoundError) {
+        return res.status(404).json({
+            body: result.getError()
+        })
+    }
+
+    return res.status(200).json({
+        body: result
+    });
+}
+
+export default {getAllOrganizers, getOrganizerById, createOrganizer, deleteOrganizer, updateOrganizer}

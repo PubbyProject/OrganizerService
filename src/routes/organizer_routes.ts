@@ -6,5 +6,7 @@ const router = express.Router();
 router.get('/organizers', controller.getAllOrganizers);
 router.get('/organizers/:id/details', controller.getOrganizerById);
 router.post('/organizers', controller.createOrganizer);
+router.delete('/organizers/:id', controller.deleteOrganizer);
+router.put('/organizers/:id', controller.updateOrganizer);
 
 export = router;
