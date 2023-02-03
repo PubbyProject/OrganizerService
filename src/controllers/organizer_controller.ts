@@ -6,7 +6,7 @@ import MalformedIdError from "../entities/errors/malformed_id";
 import OrganizerNotFoundError from "../entities/errors/not_found";
 import Organizer from "../entities/models/organizer";
 import OrganizerService from "../services/organizer_service";
-import ProducerMessage from "../entities/models/producer_message";
+import RequestMessage from "../entities/models/request_message";
 import RabbitMQProducer from "../services/messaging/producer_service";
 
 const repository = new OrganizerRepository(new PrismaClient({
@@ -37,7 +37,7 @@ const getOrganizerById = async (req: Request, res: Response) => {
         });
     }
 
-    const message: ProducerMessage = {
+    const message: RequestMessage = {
         organizerId: id
     };
 
