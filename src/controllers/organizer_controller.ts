@@ -19,7 +19,7 @@ const repository = new OrganizerRepository(new PrismaClient({
 
 const service = new OrganizerService(repository);
 
-const producer = new RabbitMQProducer(String(process.env.RABBITMQ_URL), 'fetch-organizer-events-request-queue');
+const producer = new RabbitMQProducer(String(process.env.RABBITMQ_URL));
 
 const getAllOrganizers = async (req: Request, res: Response) => {
     const organizers = await service.fetchAllOrganizers();
