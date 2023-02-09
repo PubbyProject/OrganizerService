@@ -40,7 +40,7 @@ jobs:
           # See https://github.com/datreeio/action-datree#usage for all available options.
           path: /manifests/*.yaml
           # Setting a SARIF output will generate a file named "datree.sarif" containing your test results
-          cliArguments: "--only-k8s-files --policy Staging -o sarif"
+          cliArguments: "-o sarif"
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v2
         with:
