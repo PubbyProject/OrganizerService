@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: organizers-api
-          image: localhost:3333/organizers_api:latest
+          image: localhost:3333/organizers_api:${{ GITHUB.SHA }}
           imagePullPolicy: Never
           ports:
           - containerPort: 3333
