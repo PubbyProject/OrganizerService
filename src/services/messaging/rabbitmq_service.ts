@@ -50,7 +50,6 @@ export default class RabbitMQService {
   }
 
   public async ConsumeMessage(connection: Connection) {
-    let events: EventInfo[] = [];
     const consumer = connection.createConsumer({
       queue: 'fetch-organizer-events-response-queue',
       qos: {prefetchCount: 2},
@@ -60,13 +59,13 @@ export default class RabbitMQService {
       ]
     },
     async (message) => {
-      events = message.body as EventInfo[];
+      this.events = message.body as EventInfo[];
     });
 
     consumer.on('error', (err) => {
       console.error(err);
     });
 
-    return events;
+    return this.events;
   }
 }
