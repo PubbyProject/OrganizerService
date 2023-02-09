@@ -7,7 +7,7 @@ import OrganizerNotFoundError from "../entities/errors/not_found";
 import Organizer from "../entities/models/organizer";
 import OrganizerService from "../services/organizer_service";
 import RequestMessage from "../entities/models/request_message";
-import RabbitMQProducer from "../services/messaging/producer_service";
+import RabbitMQService from "../services/messaging/rabbitmq_service";
 
 const repository = new OrganizerRepository(new PrismaClient({
     datasources: {
@@ -19,7 +19,7 @@ const repository = new OrganizerRepository(new PrismaClient({
 
 const service = new OrganizerService(repository);
 
-const producer = new RabbitMQProducer(String(process.env.RABBITMQ_URL));
+const producer = new RabbitMQService(String(process.env.RABBITMQ_URL));
 
 const getAllOrganizers = async (req: Request, res: Response) => {
     const organizers = await service.fetchAllOrganizers();

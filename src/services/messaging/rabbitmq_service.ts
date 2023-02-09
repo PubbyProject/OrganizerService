@@ -1,7 +1,7 @@
 import Connection from 'rabbitmq-client'
 import EventInfo from '../../entities/models/event_info';
 
-export default class RabbitMQProducer {
+export default class RabbitMQService {
 
   private hostUrl: string;
   private events: EventInfo[] = [];
