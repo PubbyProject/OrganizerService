@@ -7,7 +7,9 @@ import OrganizerNotFoundError from "../entities/errors/not_found";
 import Organizer from "../entities/models/organizer";
 import OrganizerService from "../services/organizer_service";
 import RequestMessage from "../entities/models/request_message";
-import RabbitMQProducer from "../services/messaging/producer_service";
+import RabbitMQService from "../services/messaging/rabbitmq_service";
+import OrganizerViewModel from "../entities/view_models/organizer_view_model";
+import EventInfoViewModel from "../entities/view_models/event_info_viewmodel";
 
 const repository = new OrganizerRepository(new PrismaClient({
     datasources: {
@@ -19,7 +21,7 @@ const repository = new OrganizerRepository(new PrismaClient({
 
 const service = new OrganizerService(repository);
 
-const producer = new RabbitMQProducer(String(process.env.RABBITMQ_URL), 'fetch-organizer-events-request-queue');
+const producer = new RabbitMQService(String(process.env.RABBITMQ_URL));
 
 const getAllOrganizers = async (req: Request, res: Response) => {
     const organizers = await service.fetchAllOrganizers();
@@ -42,10 +44,30 @@ const getOrganizerById = async (req: Request, res: Response) => {
     };
 
     let connection = producer.CreateConnection();
-    producer.ProduceMessage(connection, message);
+    let events = await producer.ProduceMessage(connection, message);
+    let eventList: EventInfoViewModel[] = new Array();
+    events.forEach(event => {
+        let viewModel: EventInfoViewModel = {
+            id: event.id,
+            name: event.name,
+            startTime: event.startTime,
+            endTime: event.endTime,
+            entryPrice: event.entryPrice
+        };
+        eventList.push(viewModel)
+    });
+    let organizerViewModel: OrganizerViewModel = {
+        id: organizer.id,
+        name: organizer.name,
+        address: organizer.address,
+        email: organizer.email,
+        hostType: organizer.hostType,
+        bio: organizer.bio,
+        events: eventList
+    };
 
     return res.status(200).json({
-        body: organizer
+        body: organizerViewModel
     });
 }
 

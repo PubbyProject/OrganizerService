@@ -1,4 +1,4 @@
-import EventInfo from "../models/event_info"
+import EventInfoViewModel from "./event_info_viewmodel"
 
 interface OrganizerViewModel {
     id: string
@@ -7,7 +7,7 @@ interface OrganizerViewModel {
     email: string
     hostType: string
     bio: string
-    events: EventInfo[]
+    events?: EventInfoViewModel[]
 }
 
 export default OrganizerViewModel;
