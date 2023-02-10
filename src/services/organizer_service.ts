@@ -1,4 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { Inject } from "typedi";
+import { Service } from "typedi";
 import OrganizerRepository from "../data/organizer_repository";
 import ErrorResponse from "../entities/errors/error_response";
 import MalformedIdError from "../entities/errors/malformed_id";
@@ -6,10 +8,11 @@ import OrganizerNotFoundError from "../entities/errors/not_found";
 import Organizer from "../entities/models/organizer";
 import validateProperties from "../helpers/prop_validator";
 
+@Service()
 export default class OrganizerService {
     private repository: OrganizerRepository;
 
-    constructor(repository: OrganizerRepository) {
+    constructor(@Inject() repository: OrganizerRepository) {
         this.repository = repository;
     }
 

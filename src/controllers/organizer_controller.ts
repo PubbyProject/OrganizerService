@@ -10,8 +10,9 @@ import RequestMessage from "../entities/models/request_message";
 import RabbitMQService from "../services/messaging/rabbitmq_service";
 import OrganizerViewModel from "../entities/view_models/organizer_view_model";
 import EventInfoViewModel from "../entities/view_models/event_info_viewmodel";
+import Container from "typedi";
 
-const repository = new OrganizerRepository(new PrismaClient({
+/*const repository = new OrganizerRepository(new PrismaClient({
     datasources: {
         db: {
             url: process.env.DATABASE_URL
@@ -19,9 +20,12 @@ const repository = new OrganizerRepository(new PrismaClient({
     }
 }));
 
-const service = new OrganizerService(repository);
+const service = new OrganizerService(repository);*/
 
-const producer = new RabbitMQService(String(process.env.RABBITMQ_URL));
+//const broker = new RabbitMQService(String(process.env.RABBITMQ_URL));
+
+const service = Container.get(OrganizerService);
+const broker = Container.get(RabbitMQService);
 
 const getAllOrganizers = async (req: Request, res: Response) => {
     const organizers = await service.fetchAllOrganizers();
@@ -43,8 +47,8 @@ const getOrganizerById = async (req: Request, res: Response) => {
         organizerId: id
     };
 
-    let connection = producer.CreateConnection();
-    let events = await producer.ProduceMessage(connection, message);
+    let connection = broker.CreateConnection();
+    let events = await broker.ProduceMessage(connection, message);
     let eventList: EventInfoViewModel[] = new Array();
     events.forEach(event => {
         let viewModel: EventInfoViewModel = {

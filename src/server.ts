@@ -2,6 +2,8 @@ import http from 'http';
 import express, { Express } from 'express';
 import morgan from 'morgan';
 import routes from './routes/organizer_routes';
+import Container from 'typedi';
+import prismaInstance from './config/prisma_instance';
 
 const router: Express = express();
 
@@ -38,6 +40,9 @@ router.use((req, res, next) => {
         message: error.message
     });
 });
+
+/** Register dependencies in TypeDI */
+Container.set("prisma", prismaInstance);
 
 /** Server */
 const httpServer = http.createServer(router);

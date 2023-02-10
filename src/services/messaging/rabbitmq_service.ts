@@ -1,13 +1,22 @@
 import Connection from 'rabbitmq-client'
+import { Inject } from 'typedi/types/decorators/inject.decorator';
+import { Service } from 'typedi/types/decorators/service.decorator';
+import RabbitMQConnectionContainer from '../../config/rabbitmq_instance';
 import EventInfo from '../../entities/models/event_info';
 
+@Service()
 export default class RabbitMQService {
 
   private hostUrl: string;
   private events: EventInfo[] = [];
+  private rabbitMqHost: RabbitMQConnectionContainer
 
-  constructor(hostUrl: string) {
+  /*constructor(hostUrl: string) {
     this.hostUrl = hostUrl;
+  }*/
+
+  constructor(@Inject() rabbitMqHost: RabbitMQConnectionContainer) {
+    this.rabbitMqHost = rabbitMqHost;
   }
 
   public getEvents() {
@@ -16,7 +25,7 @@ export default class RabbitMQService {
 
   public CreateConnection() {
     const rabbit = new Connection({
-      url: this.hostUrl,
+      url: this.rabbitMqHost.GetRabbitConnection(),
       retryLow: 1000,
       retryHigh: 30000
     });

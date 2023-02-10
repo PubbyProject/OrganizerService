@@ -1,10 +1,13 @@
 import { PrismaClient } from "@prisma/client";
+import { Inject } from "typedi";
+import { Service } from "typedi";
 import Organizer from "../entities/models/organizer";
 
+@Service()
 export default class OrganizerRepository {
     private prisma: PrismaClient
 
-    constructor(prisma: PrismaClient) {
+    constructor(@Inject() prisma: PrismaClient) {
         this.prisma =  prisma
     }
 
