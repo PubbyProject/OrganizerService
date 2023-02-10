@@ -4,8 +4,9 @@ on:
   # Note that both `push` and `pull_request` triggers should be present for GitHub to consistently present kube-linter
   # SARIF reports.
   push:
-    branches: [ main, kubelinter ]
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
   scan:
