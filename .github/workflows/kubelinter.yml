@@ -24,7 +24,7 @@ jobs:
         with:
           # Adjust this directory to the location where your kubernetes resources and helm charts are located.
           directory: manifests
-          config: kubelinter/kubelinter-config.yml
+          config: manifests/kubelinter/kubelinter-config.yml
           # The following two settings make kube-linter produce scan analysis in SARIF format which would then be
           # made available in GitHub UI via upload-sarif action below.
           format: sarif
