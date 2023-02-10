@@ -8,6 +8,9 @@
       "target": "es6",
       "skipLibCheck": true,
       "strict": true,
-      "strictNullChecks": true
+      "strictNullChecks": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "strictPropertyInitialization": false
   }
 }
